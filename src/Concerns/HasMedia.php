@@ -1,6 +1,6 @@
 <?php
 
-namespace SkalDoe\MediaLibrary\Models;
+namespace SkalDoe\MediaLibrary\Concerns;
 
 use SkalDoe\MediaLibrary\Models\Media;
 use SkalDoe\MediaLibrary\Models\MediaAttachment;
