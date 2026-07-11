@@ -42,9 +42,7 @@ class Media extends Model
 
     public function getUrlAttribute()
     {
-        // TODO: remove this when we have a proper storage system
-        // return Storage::disk($this->disk)->url($this->file_path);
-        return asset('storage/' . $this->file_path);
+        return Storage::disk($this->disk)->url($this->file_path);
     }
 
     public function getSizeAttribute()

@@ -16,7 +16,6 @@ trait HasMedia
 
     public function medias(): MorphToMany
     {
-        // TODO: retirer pivot pour voir un truc
         return $this->morphToMany(Media::class, 'mediable', 'media_attachments')
             ->withPivot('collection_name')
             ->withTimestamps();
