@@ -1,4 +1,3 @@
-// src/MediaLibraryServiceProvider.php
 <?php
 
 namespace SkalDoe\MediaLibrary;
