@@ -37,7 +37,9 @@ class Media extends Model
 
     public function uploader()
     {
-        return $this->belongsTo(User::class, 'uploaded_by');
+        $model = config('media-library.user_model') ?? config('auth.providers.users.model');
+        
+        return $this->belongsTo($model, 'uploaded_by');
     }
 
     public function getUrlAttribute()
@@ -60,3 +62,4 @@ class Media extends Model
         return $query->whereDoesntHave('attachments');
     }
 }
+
