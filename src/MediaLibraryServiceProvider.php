@@ -17,7 +17,10 @@ class MediaLibraryServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         Route::prefix('api/' . config('media-library.route_prefix'))
-            ->middleware(config('media-library.middleware'))
+            ->middleware(array_unique(array_merge(
+                config('media-library.middleware', []),
+                [\Illuminate\Routing\Middleware\SubstituteBindings::class],
+            )))
             ->group(__DIR__ . '/../routes/api.php');
 
         if ($this->app->runningInConsole()) {
