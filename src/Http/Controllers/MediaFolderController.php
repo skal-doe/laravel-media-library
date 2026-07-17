@@ -6,9 +6,31 @@ use App\Http\Controllers\Controller;
 use SkalDoe\MediaLibrary\Http\Requests\MediaFolderRequest;
 use SkalDoe\MediaLibrary\Models\MediaFolder;
 use Illuminate\Http\Request;
+use SkalDoe\MediaLibrary\Http\Resources\MediaFolderResource;
 
 class MediaFolderController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $folders = MediaFolder::whereNull('parent_id')
+            ->with('subfolders')
+            ->withCount('medias')
+            ->latest()
+            ->get();
+
+        return MediaFolderResource::collection($folders);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(MediaFolder $folder)
+    {
+        return response()->json($folder);
+    }
 
     /**
      * Store a newly created resource in storage.
