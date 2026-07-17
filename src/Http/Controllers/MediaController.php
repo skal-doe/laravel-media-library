@@ -10,6 +10,9 @@ use SkalDoe\MediaLibrary\Models\Media;
 use SkalDoe\MediaLibrary\Models\MediaFolder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use SkalDoe\MediaLibrary\Support\MediaLibraryGate;
+use SkalDoe\MediaLibrary\Events\MediaDeleted;
+use SkalDoe\MediaLibrary\Events\MediaUploaded;
 
 class MediaController extends Controller
 {
@@ -51,6 +54,8 @@ class MediaController extends Controller
      */
     public function store(Request $request)
     {
+        MediaLibraryGate::check('mediaLibrary.media.create', $request->input('folder_id'));
+
         $request->validate([
             'files' => ['required', 'array'],
             'folder_id' => ['nullable', 'uuid', 'exists:media_folders,id'],
@@ -88,7 +93,7 @@ class MediaController extends Controller
             $path = $file->storeAs('medias', $fileName, config('media-library.disk'));
 
             try {
-                $newMedias[] = Media::create([
+                $media = Media::create([
                     'disk' => config('media-library.disk'),
                     'file_path' => $path,
                     'file_name' => $file->getClientOriginalName(),
@@ -97,6 +102,10 @@ class MediaController extends Controller
                     'folder_id' => $request->filled('folder_id') ? $request->input('folder_id') : null,
                     'uploaded_by' => $request->user()->id,
                 ]);
+
+                $newMedias[] = $media;
+
+                event(new MediaUploaded($media));
             } catch (\Throwable $e) {
                 Storage::disk(config('media-library.disk'))->delete($path);
 
@@ -118,6 +127,8 @@ class MediaController extends Controller
      */
     public function update(Request $request, Media $media)
     {
+        MediaLibraryGate::check('mediaLibrary.media.update', $media);
+
         $request->validate([
             'folder_id' => ['nullable', 'uuid', 'exists:media_folders,id'],
         ]);
@@ -134,6 +145,8 @@ class MediaController extends Controller
      */
     public function destroy(Media $media)
     {
+        MediaLibraryGate::check('mediaLibrary.media.delete', $media);
+
         if ($media->attachments()->exists()) {
             return response()->json([
                 'message' => 'Ce média est actuellement utilisé et ne peut pas être supprimé.',
@@ -141,6 +154,8 @@ class MediaController extends Controller
         }
 
         $media->delete();
+
+        event(new MediaDeleted($media));
 
         return response()->noContent();
     }

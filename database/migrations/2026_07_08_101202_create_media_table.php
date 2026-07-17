@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignUuid('folder_id')->nullable()->constrained('media_folders')->nullOnDelete();
 
             $table->foreignId('uploaded_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

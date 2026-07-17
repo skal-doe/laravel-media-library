@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use SkalDoe\MediaLibrary\MediaCollection;
 
 return new class extends Migration {
     /**
@@ -14,7 +15,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->foreignUuid('media_id')->constrained('media')->cascadeOnDelete();
             $table->uuidMorphs('mediable');
-            $table->string('collection_name')->default('default');
+            $table->string('collection_name')->default(MediaCollection::DEFAULT);
             $table->timestamps();
 
             $table->index(['mediable_type', 'mediable_id', 'collection_name']);

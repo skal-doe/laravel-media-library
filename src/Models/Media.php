@@ -5,12 +5,13 @@ namespace SkalDoe\MediaLibrary\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 
 class Media extends Model
 {
-    use HasUuids;
+    use HasUuids, SoftDeletes;
 
     protected $fillable = [
         'disk',
@@ -22,8 +23,9 @@ class Media extends Model
         'folder_id'
     ];
 
-    protected static function booted(){
-        static::deleting(function (Media $media) {
+    protected static function booted()
+    {
+        static::forceDeleted(function (Media $media) {
             if (Storage::disk($media->disk)->exists($media->file_path)) {
                 Storage::disk($media->disk)->delete($media->file_path);
             }
@@ -38,7 +40,7 @@ class Media extends Model
     public function uploader()
     {
         $model = config('media-library.user_model') ?? config('auth.providers.users.model');
-        
+
         return $this->belongsTo($model, 'uploaded_by');
     }
 
@@ -62,4 +64,3 @@ class Media extends Model
         return $query->whereDoesntHave('attachments');
     }
 }
-

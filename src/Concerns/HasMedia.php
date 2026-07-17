@@ -2,6 +2,7 @@
 
 namespace SkalDoe\MediaLibrary\Concerns;
 
+use SkalDoe\MediaLibrary\MediaCollection;
 use SkalDoe\MediaLibrary\Models\Media;
 use SkalDoe\MediaLibrary\Models\MediaAttachment;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -21,7 +22,7 @@ trait HasMedia
             ->withTimestamps();
     }
 
-    protected function singleMedia(string $collection)
+    protected function singleMedia(string $collection = MediaCollection::DEFAULT)
     {
         return $this->hasOneThrough(
             Media::class,
@@ -36,7 +37,7 @@ trait HasMedia
             ->latest('created_at');
     }
 
-    public function syncMedia(?string $mediaId, string $collection): void
+    public function syncMedia(?string $mediaId, string $collection = MediaCollection::DEFAULT): void
     {
         $this->mediaAttachments()->where('collection_name', $collection)->delete();
 
