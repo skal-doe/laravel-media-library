@@ -49,4 +49,14 @@ trait HasMedia
             'collection_name' => $collection,
         ]);
     }
+
+    public static function createWithMedia(array $attributes, ?string $mediaId, string $collection): static
+    {
+        return DB::transaction(function () use ($attributes, $mediaId, $collection) {
+            $model = static::create($attributes);
+            $model->syncMedia($mediaId, $collection);
+
+            return $model;
+        });
+    }
 }
