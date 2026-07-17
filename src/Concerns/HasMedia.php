@@ -7,6 +7,7 @@ use SkalDoe\MediaLibrary\Models\Media;
 use SkalDoe\MediaLibrary\Models\MediaAttachment;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 
 trait HasMedia
 {
@@ -57,6 +58,16 @@ trait HasMedia
             $model->syncMedia($mediaId, $collection);
 
             return $model;
+        });
+    }
+
+    public function updateWithMedia(array $attributes, ?string $mediaId, string $collection): static
+    {
+        return DB::transaction(function () use ($attributes, $mediaId, $collection) {
+            $this->update($attributes);
+            $this->syncMedia($mediaId, $collection);
+
+            return $this;
         });
     }
 }
