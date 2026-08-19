@@ -14,8 +14,6 @@ class MediaLibraryServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
         Route::group([
             'prefix' => 'api/' . config('media-library.route_prefix'),
             'middleware' => array_unique(array_merge(
@@ -27,6 +25,9 @@ class MediaLibraryServiceProvider extends ServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
+            $this->commands([
+                    \SkalDoe\MediaLibrary\Console\Commands\InstallCommand::class,
+                ]);
             $this->publishesMigrations([
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
             ], 'media-library-migrations');
